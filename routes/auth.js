@@ -9,13 +9,6 @@ router.use((req, res, next) => {
   next();
 });
 
-router.get("/testAPI", (req, res) => {
-  const msgObj = {
-    message: "Test API is working.",
-  };
-  return res.json(msgObj);
-});
-
 router.post("/register", async (req, res) => {
   // check the validation of data
   const { error } = registerValidation(req.body);
@@ -46,6 +39,7 @@ router.post("/register", async (req, res) => {
 
 router.post("/login", (req, res) => {
   // check the validation of data
+  console.log("login start")
   const { error } = loginValidation(req.body);
   if (error) return res.status(400).send(error.details[0].message);
 

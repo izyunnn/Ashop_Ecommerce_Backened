@@ -1,5 +1,6 @@
 const express = require("express");
 const app = express();
+const cors = require('cors');
 const mongoose = require("mongoose");
 const dotenv = require("dotenv");
 dotenv.config();
@@ -20,6 +21,17 @@ mongoose
   .catch((e) => {
     console.log(e);
   });
+
+const corsOptions = {
+  origin: [
+    'http://localhost:8081',
+    'http://localhost:8080',
+  ],
+  methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
+  allowedHeaders: ['Content-Type', 'Authorization'],
+};
+  
+  app.use(cors(corsOptions));
 
 // middlewares
 app.use(express.json());
