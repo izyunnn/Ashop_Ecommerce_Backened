@@ -2,6 +2,8 @@ const router = require("express").Router();
 const Product = require("../models").productModel;
 const productValidation = require("../validation").productValidation;
 const multer = require("multer");
+const path = require("path");
+const fs = require("fs");
 
 router.use((req, res, next) => {
   console.log("A request is coming into api...");
@@ -10,14 +12,26 @@ router.use((req, res, next) => {
 
 //store image
 const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, __dirname);
+  destination: function(req, file, cb) {
+    // :::::::::::::::Create diretories:::::::::::::::::::
+    fs.mkdir('./images/',(err)=>{
+       cb(null, './images/');
+    });
   },
   filename: function (req, file, cb) {
     cb(null, Date.now() + file.originalname);
   },
 });
-const upload = multer({ storage: storage });
+
+// filter file
+const fileFilter = (req , file, cb) =>{
+  if (file.mimetype === 'image/png' || file.mimetype === 'image/jpg' || file.mimetype === 'image/jpeg') {
+    cb(null, true);
+  }
+  cb(null, false)
+}
+const upload = multer({ storage: storage, fileFilter: fileFilter });
+
 
 router.get("/", (req, res) => {
   Product.find({})
