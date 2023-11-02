@@ -13,13 +13,10 @@ router.use((req, res, next) => {
 //store image
 const storage = multer.diskStorage({
   destination: function(req, file, cb) {
-    // :::::::::::::::Create diretories:::::::::::::::::::
-    fs.mkdir('./images/',(err)=>{
-       cb(null, './images/');
-    });
+    cb(null, './images/');
   },
   filename: function (req, file, cb) {
-    cb(null, Date.now() + file.originalname);
+    cb(null, new Date().toISOString().replace(/:/g, '-') +'-'+ file.originalname);
   },
 });
 
