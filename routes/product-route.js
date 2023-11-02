@@ -1,11 +1,23 @@
 const router = require("express").Router();
 const Product = require("../models").productModel;
 const productValidation = require("../validation").productValidation;
+const multer = require("multer");
 
 router.use((req, res, next) => {
   console.log("A request is coming into api...");
   next();
 });
+
+//store image
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, __dirname);
+  },
+  filename: function (req, file, cb) {
+    cb(null, Date.now() + file.originalname);
+  },
+});
+const upload = multer({ storage: storage });
 
 router.get("/", (req, res) => {
   Product.find({})
@@ -30,23 +42,29 @@ router.get("/:_id", (req, res) => {
     });
 });
 
-router.post("/", async (req, res) => {
+// router.get("/api/getImage", (req, res) => {
+//   ImageModel.find({}, (err, images) => {
+//     if (err) {
+//       console.log(err);
+//       res.status(500).send("An error occurred", err);
+//     } else {
+//       res.render("index", { images: images });
+//     }
+//   });
+// });
+
+router.post("/", upload.single("image"), async (req, res) => {
   console.log("A request is coming into products...");
   // validate the inputs before making a new product
   const { error } = productValidation(req.body);
   if (error) return res.status(400).send(error.details[0].message);
-  const { title, description, price,productImage, category } = req.body;
-  if (req.user.isCustomer()) {
-    return res.status(400).send("Only merchant can post a new product.");
-  }
-
+  const { title, description, price, category, image } = req.body;
   const newProduct = new Product({
     title,
     description,
     price,
-    productImage,
     category,
-    merchant: req.user._id,
+    image: req.file.path
   });
 
   try {

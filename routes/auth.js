@@ -11,14 +11,15 @@ router.use((req, res, next) => {
 
 router.post("/register", async (req, res) => {
   // check the validation of data
+  console.log("register start")
   const { error } = registerValidation(req.body);
+  console.log(error)
   if (error) return res.status(400).send(error.details[0].message);
 
   // check if the user exists
   const emailExist = await User.findOne({ email: req.body.email });
   if (emailExist)
     return res.status(400).send("Email has already been registered.");
-
   // register the user
   const newUser = new User({
     email: req.body.email,
@@ -38,6 +39,7 @@ router.post("/register", async (req, res) => {
 });
 
 router.post("/login", (req, res) => {
+  console.log(req.body)
   // check the validation of data
   console.log("login start")
   const { error } = loginValidation(req.body);
